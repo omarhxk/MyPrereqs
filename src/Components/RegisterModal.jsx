@@ -9,9 +9,7 @@ function RegisterModal() {
             <ModalHeader text="Register"/>
             <ModalMessage text="Sign up for an account using your email!"/>
             <RegisterForm/>
-            <div className="flex justify-center">
-                <button class="text-center rounded-4xl shadow-xl w-40 h-10 ring-2 mb-8 ring-blue-300 text-white mt-5 bg-blue-500 cursor-pointer">Sign Up</button>
-            </div>
+            
         </div>
     )
 }
