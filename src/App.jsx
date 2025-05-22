@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Home from './Pages/Home'
 import NoPage from './Pages/NoPage'
+import Register from "./Pages/Register"
 
 const App = function() {
     
@@ -9,7 +10,8 @@ const App = function() {
             <BrowserRouter>
                 <Routes>
                     <Route index element={<Home/>}/>
-                    <Route path="/home" element={<Home/>}/>
+                    <Route path="/" element={<Home/>}/>
+                    <Route path="/Register" element={<Register/>}/>
                     <Route path="*" element={<NoPage/>}/>
                 </Routes>
             </BrowserRouter>
