@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import supabase from '../supabase-client.js'
+import { Link } from 'react-router-dom'
 
 function RegisterForm() {
 
@@ -16,18 +17,19 @@ function RegisterForm() {
             password: password,
         })
 
+        setEmail("")
+        setPassword("")
+
         if (error) {
             setMessage(error.message)
-            return;
+            return
         }
 
         if (data) {
             setMessage("Account created!")
-            return;
+            return
         }
 
-        setEmail("")
-        setPassword("")
     }
 
     return(
@@ -44,7 +46,7 @@ function RegisterForm() {
                 {message && <p>{message}</p>}
             </div>
             <div className="flex justify-center">
-                <button className="text-center rounded-4xl shadow-xl w-40 h-10 ring-2 mt-8 ring-blue-300 text-white mt-5 bg-blue-500 cursor-pointer">Sign Up</button>
+                <button className="text-center rounded-4xl shadow-xl w-40 h-10 ring-2 mt-8 ring-blue-300 text-white bg-blue-500 cursor-pointer">Sign Up</button>
             </div>
         </form>
     )
