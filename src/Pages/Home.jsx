@@ -1,5 +1,6 @@
 import Header from '../Components/Header.jsx'
 import Courses from '../Components/Courses.jsx'
+import Logout from '../Components/Logout.jsx'
 
 function Home() {
     
@@ -7,6 +8,7 @@ function Home() {
     <>
        <Header/>
        <Courses/>
+       <Logout/>
     </>
 
 

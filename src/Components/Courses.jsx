@@ -8,7 +8,7 @@ function Courses() {
     const courses4 = [{courseCode: "CSCD01", courseName: "Intro to Software Engineering II"}, {courseCode: "CSCD09", courseName: "Development on The Web II"}]
 
     return(
-        <div className="flex justify-center">
+        <div className="flex flex-grow justify-center">
         <NthYearCourses text="First Year" courses={courses1}/>
         <NthYearCourses text="Second Year" courses={courses2}/>
         <NthYearCourses text="Third Year" courses={courses3}/>
