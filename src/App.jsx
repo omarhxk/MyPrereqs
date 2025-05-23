@@ -3,6 +3,7 @@ import Home from './Pages/Home'
 import NoPage from './Pages/NoPage'
 import Register from "./Pages/Register"
 import Login from "./Pages/Login"
+import Wrapper from './Components/Wrapper'
 
 const App = function() {
     
@@ -10,8 +11,7 @@ const App = function() {
         <div>
             <BrowserRouter>
                 <Routes>
-                    <Route index element={<Home/>}/>
-                    <Route path="/" element={<Home/>}/>
+                    <Route index element={<Wrapper> <Home/> </Wrapper>}/>
                     <Route path="/Register" element={<Register/>}/>
                     <Route path="/Login" element={<Login/>}/>
                     <Route path="*" element={<NoPage/>}/>
