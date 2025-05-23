@@ -1,6 +1,6 @@
 import PropTypes from "prop-types"
 
-function InputCourses(props) {
+function InputCourses() {
 
     return(
         
@@ -10,7 +10,3 @@ function InputCourses(props) {
 }
 
 export default InputCourses
-
-InputCourses.propTypes = {
-    inputText: PropTypes.string
-}
