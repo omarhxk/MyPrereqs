@@ -18,6 +18,38 @@ function InputCoursesModal() {
     )
 }
 
+
+function isDigit(char) {
+    return !isNaN(char) && char.trim() !== '';
+  }
+
+
+function getSiteStructure(sampleCode ,sampleSite) {
+    let ind = sampleSite.indexOf(sampleCode)
+    if (ind == -1) {
+        //try "letters" + "/" + "numbers" 
+        for (let i = 0; i < sampleCode.length; i++) {
+            if (isDigit(char)) {
+                break
+            }
+        }
+        const startOfCode = sampleCode.slice(0, i)
+        const endOfCode = sampleCode.slice(i)
+        const newCode = startOfCode + "/" + endOfCode
+        ind = sampleSite.indexOf(newCode)
+        if (ind == -1) {
+            return ["", ""]
+        }
+    }
+
+    const startOfSite = sampleSite.slice(0, ind)
+    const endOfSite = sampleSite.slice(ind + sampleCode.length)
+    
+
+    return [startOfSite, endOfSite]
+}
+
+
 function getCourses(text, numLetters, numDigits, letterForLevel) {
     
     let courseCodes = []
