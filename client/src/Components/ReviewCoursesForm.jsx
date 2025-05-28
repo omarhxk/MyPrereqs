@@ -1,12 +1,29 @@
 import ModalHeader from "./ModalHeader"
 import ModalMessage from "./ModalMessage"
 import supabase from '../supabase-client.js'
+import { useState, useEffect } from 'react'
 
 
 function ReviewCoursesForm( { courseCodes, courseNames, courseLevels, coursePrereqs, setCourseCodes, setCourseNames, setCourseLevels, setCoursePrereqs, setCoursesInputted, setHasCompletedOnboarding } ) {
 
+    const [courseCompletion, setCourseCompletion] = useState([])
+    
+    useEffect(() => {
+        //initializing courseCompletion
+        const initializeCourseCompletion = () => { 
+            const falseArray = []
+            const len = courseCodes.length
+            for (let i = 0; i < len; i++) {
+                falseArray.push(false)
+            }
+            setCourseCompletion(falseArray)
+        }
+        initializeCourseCompletion()
+    }, []) 
+
+
     const saveCourses = async () => {
-        storeToDb(courseCodes, courseNames, courseLevels, coursePrereqs)
+        storeToDb(courseCodes, courseNames, courseLevels, coursePrereqs, courseCompletion)
         setHasCompletedOnboarding(true)
         //updated onboarding status in db
         const {
@@ -37,7 +54,8 @@ function ReviewCoursesForm( { courseCodes, courseNames, courseLevels, coursePrer
             <ModalMessage text="Please verify the following course information"/>
             <div className="space-y-4 p-2 overflow-y-auto">
                 { courseCodes.map((code, index) => ( 
-                    <div key={index} className="p-4 border rounded-lg shadow space-y-2">
+                    <div className="flex space-x-3">
+                    <div key={index} className="flex-1 p-4 border rounded-lg shadow space-y-2">
                         <div className="flex space-x-2">
                             <p><strong>Code:</strong></p>
                             <input value={code} className="bg-slate-100 rounded-2xl w-full block" 
@@ -78,7 +96,33 @@ function ReviewCoursesForm( { courseCodes, courseNames, courseLevels, coursePrer
                             </div> ))) 
                             : null
                         }
+                        <div className="flex space-x-1">
+                            <p><strong>Completed:</strong></p>
+                            <input value={courseCompletion[index]} className="bg-slate-100 rounded-2xl w-full block" type="checkbox" max="5" min="1"
+                                onChange={(e) => setCourseCompletion(prevCourseCompletions => {
+                                    const copy = [...prevCourseCompletions]
+                                    copy[index] = e.target.checked
+                                    return copy
+                                })}/>
+                        </div>
 
+                    </div>
+                    
+                    <button className="cursor-pointer h-10 w-10 bg-slate-200 rounded-xl shadow-2xl" 
+                        onClick={() => {
+                            //remove course from all arrays
+                            setCourseCodes((prevCourseCodes) =>
+                                prevCourseCodes.filter((_, i) => i != index))
+                            setCourseNames((prevCourseNames) =>
+                                prevCourseNames.filter((_, i) => i != index))
+                            setCourseLevels((prevCourseLevels) =>
+                                prevCourseLevels.filter((_, i) => i != index))
+                            setCoursePrereqs((prevCoursePrereqs) =>
+                                prevCoursePrereqs.filter((_, i) => i != index))
+                            setCourseCompletion((prevCourseCompletions) =>
+                                prevCourseCompletions.filter((_, i) => i != index))
+                            console.log(courseCompletion)
+                        }}>🗑️</button>
                     </div>
 
                 )) 
@@ -96,7 +140,7 @@ function ReviewCoursesForm( { courseCodes, courseNames, courseLevels, coursePrer
 }
 
 
-const storeToDb = async (courseCodes, courseNames, courseLevels, coursePrereqs) => {
+const storeToDb = async (courseCodes, courseNames, courseLevels, coursePrereqs, courseCompletion) => {
     const {
         data: { user },
         error: userError } = await supabase.auth.getUser() 
@@ -114,7 +158,8 @@ const storeToDb = async (courseCodes, courseNames, courseLevels, coursePrereqs) 
             course_code: courseCodes[i],
             course_name: courseNames[i],
             prerequisites: coursePrereqs[i],
-            course_level: courseLevels[i]
+            course_level: courseLevels[i],
+            completed: courseCompletion[i]
         }
 
         const { data, error } = await supabase
