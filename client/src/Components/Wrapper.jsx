@@ -14,12 +14,12 @@ function Wrapper({ children }) {
         }
     })
 
-    //if (auth) {
+    if (auth) {
         return <>{children}</>
-    //}
-    //else {
+    }
+    else {
         return <Navigate to="/Login"/>
-    //}
+    }
 }
 
 export default Wrapper

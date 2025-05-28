@@ -8,6 +8,35 @@ function RegisterForm() {
     const [password, setPassword] = useState("")
     const [message, setMessage] = useState("")
      
+
+    const createProfileInDb = async () => {
+        const { 
+            data: { user },
+            error: authError 
+        } = await supabase.auth.getUser()
+    
+        if (authError || !user) {
+            console.log("Error fetching user:", authError)
+            return
+        }
+    
+        const toSend = {
+            user_id: user.id,
+            has_completed_onboarding: false
+        }
+    
+        const { data, error } = await supabase
+            .from("Profiles")
+            .insert(toSend)
+    
+        if (error) {
+            console.error("Error creating profile in Supabase:", error)
+        }
+    
+        return
+    }
+
+    
     const handleSubmit = async (event) => {
         event.preventDefault()
         setMessage("")
@@ -27,7 +56,9 @@ function RegisterForm() {
 
         if (data) {
             setMessage("Account created!")
-            return
+
+            //creating profile in database
+            createProfileInDb()      
         }
 
     }
@@ -51,5 +82,6 @@ function RegisterForm() {
         </form>
     )
 }
+
 
 export default RegisterForm
