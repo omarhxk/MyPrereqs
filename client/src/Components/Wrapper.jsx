@@ -12,14 +12,15 @@ function Wrapper({ children }) {
             setAuth(!!session) //true if session, false if null
             setLoading(false)
         }
-    })
 
-    if (auth) {
-        return <>{children}</>
+        getSession()
+    }, [])
+
+    if (loading) {
+        return null
     }
-    else {
-        return <Navigate to="/Login"/>
-    }
+
+    return auth ? children : <Navigate to="/Login"/>
 }
 
 export default Wrapper

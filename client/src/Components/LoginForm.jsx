@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import supabase from '../supabase-client.js'
 import { Link, useNavigate } from "react-router-dom"
 
-function RegisterForm() {
+function LoginForm() {
     const navigate = useNavigate()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -44,10 +44,10 @@ function RegisterForm() {
                 {message && <p>{message}</p>}
             </div>
             <div className="flex justify-center">
-                <button className="text-center rounded-4xl shadow-xl w-40 h-10 ring-2 mt-8 ring-blue-300 text-white bg-blue-500 cursor-pointer">Sign In</button>
+                <button className="text-center rounded-4xl shadow-xl w-40 h-10 ring-2 mt-8 ring-blue-300 text-white bg-blue-500 cursor-pointer" type="submit">Sign In</button>
             </div>
         </form>
     )
 }
 
-export default RegisterForm
+export default LoginForm

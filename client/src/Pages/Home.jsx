@@ -46,7 +46,7 @@ function Home() {
     return(
     <>
        <Header/>
-       {hasCompletedOnboarding ? <Courses/> : <InputCoursesModal/>}
+       {hasCompletedOnboarding ? <Courses/> : <InputCoursesModal setHasCompletedOnboarding={setHasCompletedOnboarding}/>}
        <Logout/>
     </>
 

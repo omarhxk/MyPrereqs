@@ -4,7 +4,7 @@ import ModalMessage from './ModalMessage.jsx'
 import axios from 'axios'
 import supabase from '../supabase-client.js'
 
-function InputCoursesForm( { setCoursesInputted, setCourseCodes, courseCodes, setCourseNames, setCourseLevels, setCoursePrereqs } ) {
+function InputCoursesForm( { setCoursesInputted, coursePrereqs, setCourseNames, setCourseCodes, setCourseLevels, setCoursePrereqs } ) {
 
     const [text, setText] = useState("")
     const [sampleCode, setSampleCode] = useState("")
@@ -18,24 +18,94 @@ function InputCoursesForm( { setCoursesInputted, setCourseCodes, courseCodes, se
     
         const codeStructure = getCodeStructure(sampleCode)
         const siteStructure = getSiteStructure(sampleCode, sampleSite)
+
         const courses = getCourses(text, codeStructure[0], codeStructure[1], letterForLevel)
-    
-        setCourseCodes(courses[0]) 
-        setCourseNames(courses[1])
-        setCourseLevels(courses[2])
-    
+        const courseCodes = courses[0]
+        const courseNames = courses[1]
+        const courseLevels = courses[2]
+        setCourseCodes(courseCodes)
+        setCourseNames(courseNames)
+        setCourseLevels(courseLevels)
+        
+        
+
         for (const code of courseCodes) {
             const site = siteStructure[0] + code + siteStructure[1] //site for the particular course
             console.log(site)
             //ACCOUNT FOR "/" CASE (tmu)
             const preReqs = await getPrereqs(site, code)
+            
+            //prereqs = prereqs INTERSECT courses required
+            for (const preReq of preReqs) {
+                if (!courseCodes.includes(preReq)) {
+                    const index = preReqs.indexOf(preReq)
+                    preReqs.splice(index, 1)
+                }
+            }
+            
             setCoursePrereqs(prevCoursePrereqs => [...prevCoursePrereqs, preReqs])
         }
         
         //storeToDb(courseCodes, courseNames, courseLevels, coursePrereqs)
         setCoursesInputted(true)
+        console.log(coursePrereqs)
 
         return
+    }
+
+
+    function getCourses(text, numLetters, numDigits, letterForLevel) {
+
+        const patternString = `[A-Z]{${numLetters}}\\d{${numDigits}}(?:[A-Z]\\d)?.*$`;
+        const coursePattern = new RegExp(patternString, "gm"); //pattern to look for
+    
+        const courses = text.match(coursePattern)
+        const courseCodesArray = []
+        const courseNamesArray = []
+        const courseLevelsArray = []
+
+
+    
+        courses.forEach(element => {
+            const firstSpace = element.indexOf(" ")
+    
+            if (firstSpace != -1) {
+                const courseCode = element.slice(0, firstSpace)
+                const courseName = element.slice(firstSpace + 1)
+    
+                let level = 0
+                if (letterForLevel) {
+                    const letterLevel = courseCode[numLetters - 1]
+                    switch (letterLevel) {
+                        case "A":
+                            level = 1
+                            break
+                        case "B":
+                            level = 2
+                            break
+                        case "C":
+                            level = 3
+                            break
+                        default:
+                            level = 4
+                    }
+                }
+                else {
+                    level = parseInt(courseCode[numLetters])
+                }
+                
+                courseCodesArray.push(courseCode)
+                courseNamesArray.push(courseName)
+                courseLevelsArray.push(level)
+                
+    
+            }
+        });
+
+        console.log(courseCodesArray)
+    
+        return[courseCodesArray, courseNamesArray, courseLevelsArray]
+    
     }
 
 
@@ -108,97 +178,6 @@ function getSiteStructure(sampleCode, sampleSite) {
     
 
     return [startOfSite, endOfSite]
-}
-
-
-function getCourses(text, numLetters, numDigits, letterForLevel) {
-    
-    let courseCodes = []
-    let courseNames = []
-    let courseLevels = []
-
-    const patternString = `[A-Z]{${numLetters}}\\d{${numDigits}}(?:[A-Z]\\d)?.*$`;
-    const coursePattern = new RegExp(patternString, "gm"); //pattern to look for
-
-    const courses = text.match(coursePattern)
-    console.log(courses)
-
-    courses.forEach(element => {
-        console.log(element)
-        const firstSpace = element.indexOf(" ")
-
-        if (firstSpace != -1) {
-            const courseCode = element.slice(0, firstSpace)
-            const courseName = element.slice(firstSpace + 1)
-
-            let level = 0
-            if (letterForLevel) {
-                const letterLevel = courseCode[numLetters - 1]
-                switch (letterLevel) {
-                    case "A":
-                        level = 1
-                        break
-                    case "B":
-                        level = 2
-                        break
-                    case "C":
-                        level = 3
-                        break
-                    default:
-                        level = 4
-                }
-            }
-            else {
-                level = parseInt(courseCode[numLetters])
-            }
-
-            courseCodes.push(courseCode)
-            courseNames.push(courseName)
-            courseLevels.push(level)
-
-        }
-    });
-
-    console.log(courseCodes)
-    console.log(courseNames)
-    console.log(courseLevels)
-
-    return [courseCodes, courseNames, courseLevels]
-
-}
-
-
-const storeToDb = async (courseCodes, courseNames, courseLevels, coursePrereqs) => {
-    const {
-        data: { user },
-        error: userError } = await supabase.auth.getUser() 
-    
-
-    if (userError || !user) {
-        console.error("Error getting user:", userError)
-    }
-
-    let i = 0
-    const len = courseCodes.length
-    while (i < len) {
-        const newCourseData = {
-            user_id: user.id,
-            course_code: courseCodes[i],
-            course_name: courseNames[i],
-            prerequisites: coursePrereqs[i],
-            course_level: courseLevels[i]
-        }
-
-        const { data, error } = await supabase
-            .from("CourseData")
-            .insert([newCourseData])
-        
-        if (error) {
-            console.error("Error adding course: ", error)
-        }
-
-        i++
-    }
 }
 
 

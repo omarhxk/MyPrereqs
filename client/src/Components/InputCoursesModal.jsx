@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import InputCoursesForm from './InputCoursesForm.jsx'
+import ReviewCoursesForm from './ReviewCoursesForm.jsx'
 import supabase from '../supabase-client.js'
 
 
-function InputCoursesModal() {
+function InputCoursesModal({ setHasCompletedOnboarding }) {
 
     const [coursesInputted, setCoursesInputted] = useState(false)
     const [courseCodes, setCourseCodes] = useState([])
@@ -13,14 +14,8 @@ function InputCoursesModal() {
 
 
     return(
-        coursesInputted ? <InputCoursesForm 
-            setCoursesInputted={setCoursesInputted} 
-            courseCodes={courseCodes} 
-            setCourseCodes={setCourseCodes} 
-            setCourseNames={setCourseNames} 
-            setCourseLevels={setCourseLevels} 
-            setCoursePrereqs={setCoursePrereqs}/> 
-            : <ReviewCoursesForm 
+        coursesInputted 
+            ? <ReviewCoursesForm 
                 courseCodes={courseCodes} 
                 courseNames={courseNames}
                 courseLevels={courseLevels}
@@ -28,16 +23,20 @@ function InputCoursesModal() {
                 setCourseCodes={setCourseCodes}
                 setCourseNames={setCourseNames}
                 setCourseLevels={setCourseLevels}
-                setCoursePrereqs={setCoursePrereqs}/>
+                setCoursePrereqs={setCoursePrereqs}
+                setCoursesInputted={setCoursesInputted}
+                setHasCompletedOnboarding={setHasCompletedOnboarding}/>
+            : <InputCoursesForm 
+                setCoursesInputted={setCoursesInputted} 
+                setCourseCodes={setCourseCodes} 
+                setCourseNames={setCourseNames} 
+                setCourseLevels={setCourseLevels} 
+                coursePrereqs={coursePrereqs}
+                setCoursePrereqs={setCoursePrereqs}/> 
         
         
     )
 }
-
-
-
-
-
 
 
 
